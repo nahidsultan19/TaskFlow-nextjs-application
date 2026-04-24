@@ -1,10 +1,52 @@
 "use client"
 import { useState } from "react";
 import Link from "next/link";
+import { useAuth } from "@/app/hooks/useAuth";
+import { useRouter } from "next/navigation";
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from "@/lib/firebase"
 
 const LoginForm = () => {
     const [error, setError] = useState('')
-    const [loading, setLoading] = useState(false)
+    const { user, loading } = useAuth()
+    const [submitting, setSubmitting] = useState(false)
+    const router = useRouter()
+
+    const handleEmailLogin = async (e) => {
+        e.preventDefault()
+        setSubmit(true)
+        setError("")
+        const formData = new FormData(e.target);
+        const email = formData.get("email")
+        const password = formData.get("password")
+
+        try {
+            await signInWithEmailAndPassword(auth, email, password)
+            router.push('/dashboard')
+        } catch (error) {
+            setError("Invalid email or password")
+        } finally {
+            setSubmit(false)
+        }
+    }
+
+    const handleGoogleLogin = async () => {
+        setSubmitting(true)
+        setError("")
+
+        try {
+            const provider = new GoogleAuthProvider();
+            await signInWithPopup(auth, provider);
+            router.push("/dashboard")
+        } catch (error) {
+            setError("Google sign in Failed")
+        } finally {
+            setSubmitting(false)
+        }
+    }
+
+    if (loading) return null
+    if (user) return null
 
     return (
         <div className="bg-gray-900 rounded-2xl border border-gray-800 w-full max-w-md p-8">
@@ -32,7 +74,7 @@ const LoginForm = () => {
             )}
 
             {/* Form */}
-            <form className="space-y-4">
+            <form onSubmit={handleEmailLogin} className="space-y-4">
                 <div>
                     <label className="text-xs font-medium text-gray-400 block mb-1.5">Email</label>
                     <input
@@ -60,10 +102,10 @@ const LoginForm = () => {
                 </div>
                 <button
                     type="submit"
-                    disabled={loading}
-                    className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-lg text-sm transition disabled:opacity-50"
+                    disabled={submitting}
+                    className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-lg text-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    {loading ? 'Signing in...' : 'Sign in'}
+                    {submitting ? 'Signing in...' : 'Sign in'}
                 </button>
             </form>
 
@@ -76,7 +118,7 @@ const LoginForm = () => {
 
             {/* Google */}
             <button
-                // onClick={handleGoogleLogin}
+                onClick={handleGoogleLogin}
                 disabled={loading}
                 className="w-full border border-gray-700 hover:bg-gray-800 text-gray-300 font-medium py-2.5 rounded-lg text-sm flex items-center justify-center gap-2 transition disabled:opacity-50"
             >
