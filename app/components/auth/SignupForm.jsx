@@ -1,54 +1,85 @@
 "use client"
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { useAuth } from "@/app/hooks/useAuth";
-import { useRouter, useSearchParams } from "next/navigation";
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth } from "@/lib/firebase"
 
-const LoginForm = () => {
-    const [error, setError] = useState('')
-    const { user, loading } = useAuth()
+import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
+import { useAuth } from '@/app/hooks/useAuth';
+import { useRouter } from 'next/navigation';
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut, updateProfile } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
+import { useSearchParams } from 'next/navigation';
+
+const SignupForm = () => {
+    const router = useRouter();
+
     const [submitting, setSubmitting] = useState(false)
-    const router = useRouter()
-    const searchParams = useSearchParams();
-    const registered = searchParams.get('registered')
-    console.log('registered param:', registered)
+    const { user, loading } = useAuth();
+    const [error, setError] = useState("")
+    const isSigninUp = useRef(false)
+
+
 
     useEffect(() => {
-        if (!loading && user) {
+        if (!loading && user && !isSigninUp.current) {
             router.push("/dashboard")
         }
     }, [user, loading])
 
-    const handleEmailLogin = async (e) => {
-        e.preventDefault()
-        setSubmitting(true)
+
+    const handleSignUp = async (e) => {
+        e.preventDefault();
+        setSubmitting(true);
         setError("")
+
+        isSigninUp.current = true
+
         const formData = new FormData(e.target);
+        const name = formData.get("name")
         const email = formData.get("email")
         const password = formData.get("password")
+        const confirm = formData.get("confirm")
+
+        if (password !== confirm) {
+            setError("Password do not match")
+            setSubmitting(false);
+            isSigninUp.current = false;
+            return
+        }
+
+        if (password.length < 6) {
+            setError("Password must be at least 6 characters");
+            setSubmitting(false);
+            isSigninUp.current = false;
+            return
+        }
 
         try {
-            await signInWithEmailAndPassword(auth, email, password)
-            router.push('/dashboard')
+            const result = await createUserWithEmailAndPassword(auth, email, password)
+            await updateProfile(result.user, { displayName: name });
+            await signOut(auth)
+            router.push("/login?registered=true")
         } catch (error) {
-            setError("Invalid email or password")
+            isSigninUp.current = false;
+            if (error.code === "auth/email-already-in-use") {
+                setError("Email is already registered")
+            } else {
+                setError("Something went worng. Please try again")
+            }
         } finally {
             setSubmitting(false)
         }
     }
 
-    const handleGoogleLogin = async () => {
-        setSubmitting(true)
-        setError("")
 
+    // google login
+    const handleGoogleSignup = async () => {
+        setSubmitting(true)
+        setError('')
         try {
-            const provider = new GoogleAuthProvider();
-            await signInWithPopup(auth, provider);
-            router.push("/dashboard")
-        } catch (error) {
-            setError("Google sign in Failed")
+            const provider = new GoogleAuthProvider()
+            await signInWithPopup(auth, provider)
+            router.push('/dashboard')
+        } catch (err) {
+            setError('Google sign in failed')
         } finally {
             setSubmitting(false)
         }
@@ -57,8 +88,10 @@ const LoginForm = () => {
     if (loading) return null
     if (user) return null
 
+
     return (
         <div className="bg-gray-900 rounded-2xl border border-gray-800 w-full max-w-md p-8">
+
             {/* Logo */}
             <div className="text-center mb-8">
                 <div className="inline-flex items-center gap-2 mb-2">
@@ -72,14 +105,8 @@ const LoginForm = () => {
                     </div>
                     <span className="text-lg font-semibold text-white">TaskFlow</span>
                 </div>
-                <p className="text-gray-400 text-sm">Sign in to your account</p>
+                <p className="text-gray-400 text-sm">Create your account</p>
             </div>
-
-            {registered && (
-                <div className="bg-green-500/10 text-green-400 text-sm px-4 py-3 rounded-lg mb-4 border border-green-500/20">
-                    Account created successfully! Please sign in.
-                </div>
-            )}
 
             {/* Error */}
             {error && (
@@ -91,9 +118,23 @@ const LoginForm = () => {
 
 
             {/* Form */}
-            <form onSubmit={handleEmailLogin} className="space-y-4">
+            <form onSubmit={handleSignUp} className="space-y-4">
                 <div>
-                    <label className="text-xs font-medium text-gray-400 block mb-1.5">Email</label>
+                    <label className="text-xs font-medium text-gray-400 block mb-1.5">
+                        Full Name
+                    </label>
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="John Doe"
+                        required
+                        className="w-full px-4 py-2.5 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    />
+                </div>
+                <div>
+                    <label className="text-xs font-medium text-gray-400 block mb-1.5">
+                        Email
+                    </label>
                     <input
                         type="email"
                         name="email"
@@ -103,15 +144,24 @@ const LoginForm = () => {
                     />
                 </div>
                 <div>
-                    <div className="flex justify-between items-center mb-1.5">
-                        <label className="text-xs font-medium text-gray-400">Password</label>
-                        <Link href="/forgot-password" className="text-xs text-indigo-400 hover:text-indigo-300">
-                            Forgot password?
-                        </Link>
-                    </div>
+                    <label className="text-xs font-medium text-gray-400 block mb-1.5">
+                        Password
+                    </label>
                     <input
                         type="password"
                         name="password"
+                        placeholder="••••••••"
+                        required
+                        className="w-full px-4 py-2.5 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    />
+                </div>
+                <div>
+                    <label className="text-xs font-medium text-gray-400 block mb-1.5">
+                        Confirm Password
+                    </label>
+                    <input
+                        type="password"
+                        name="confirm"
                         placeholder="••••••••"
                         required
                         className="w-full px-4 py-2.5 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
@@ -122,7 +172,7 @@ const LoginForm = () => {
                     disabled={submitting}
                     className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-lg text-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    {submitting ? 'Signing in...' : 'Sign in'}
+                    {submitting ? 'Creating account...' : 'Create account'}
                 </button>
             </form>
 
@@ -135,9 +185,9 @@ const LoginForm = () => {
 
             {/* Google */}
             <button
-                onClick={handleGoogleLogin}
-                disabled={loading}
-                className="w-full border border-gray-700 hover:bg-gray-800 text-gray-300 font-medium py-2.5 rounded-lg text-sm flex items-center justify-center gap-2 transition disabled:opacity-50"
+                onClick={handleGoogleSignup}
+                disabled={submitting}
+                className="w-full border border-gray-700 hover:bg-gray-800 text-gray-300 font-medium py-2.5 rounded-lg text-sm flex items-center justify-center gap-2 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 <svg width="16" height="16" viewBox="0 0 48 48">
                     <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
@@ -149,13 +199,14 @@ const LoginForm = () => {
             </button>
 
             <p className="text-center text-xs text-gray-500 mt-6">
-                Don't have an account?{' '}
-                <Link href="/signup" className="text-indigo-400 hover:text-indigo-300 font-medium">
-                    Sign up
+                Already have an account?{' '}
+                <Link href="/login" className="text-indigo-400 hover:text-indigo-300 font-medium">
+                    Sign in
                 </Link>
             </p>
+
         </div>
     );
 };
 
-export default LoginForm;
+export default SignupForm;
