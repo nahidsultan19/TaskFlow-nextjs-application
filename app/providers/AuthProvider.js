@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { AuthContext } from "../context"
 import { useRouter } from "next/navigation"
-import { onAuthStateChanged } from "firebase/auth"
+import { onAuthStateChanged, signOut } from "firebase/auth"
 import { auth } from "@/lib/firebase"
 
 const AuthProvider = ({ children }) => {
@@ -20,9 +20,14 @@ const AuthProvider = ({ children }) => {
         return () => unsubscribe();
     }, [])
 
+    const logout = async () => {
+        await signOut(auth);
+        router.push("/login")
+    }
+
 
     return (
-        <AuthContext.Provider value={{ user, loading }}>
+        <AuthContext.Provider value={{ user, loading, logout }}>
             {children}
         </AuthContext.Provider>
     )
