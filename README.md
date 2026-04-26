@@ -34,3 +34,16 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+
+## Project Details
+ - MongoDB connected
+ - Firebase configured
+ - Auth context + provider + hook
+ - Login page 
+ - Signup page
+ - Dashboard layout with sidebar + header
+ - Auth guard protecting dashboard routes
+
+ ## drag and drop library
+ - npm install @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities
