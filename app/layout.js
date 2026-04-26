@@ -26,7 +26,7 @@ export default async function RootLayout({ children }) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-gray-950">
+      <body className="min-h-full h-full flex flex-col bg-gray-950">
         <AuthProvider>
           <main className="py-8">{children}</main>
         </AuthProvider>
