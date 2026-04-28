@@ -18,5 +18,7 @@ export function useTasks(userId) {
             setLoading(false)
         }
     }
+
+    return { tasks, loading }
 }
 

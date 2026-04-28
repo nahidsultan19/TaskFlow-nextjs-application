@@ -1,0 +1,47 @@
+"use client";
+
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import React from 'react';
+
+const priorityStyles = {
+    high: "bg-red-500/10 text-red-400 border-red-500/20",
+    medium: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+    low: "bg-green-500/10 text-green400 vorder-green-500/20"
+}
+
+const TaskCard = () => {
+
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: task._id })
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.4 : 1
+    }
+
+    return (
+        <div ref={setNodeRef} style={style} {...attributes} {...listeners} className='bg-gray-800 border border-gray-700 rounded-xl p-4 cursor-grab active:cursor-grabbing hover:border-gray-600 transition group'>
+            {/* priority */}
+            <div className='flex items-center justify-between mb-2'>
+                <span className={`text-xs px-2 py-0.5 rounded-full border ${priorityStyles[task.priority]}`}>{task.priority}</span>
+                <button className='opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-400 transition'>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <p className='text-white text-sm font-medium'>{task.title}</p>
+            {task.description && (
+                <p className='text-gray-400 text-xs mt-1 line-clamp-2'>{task.description}</p>
+            )}
+
+            {/* footer  */}
+            <div className='flex items-center justify-between mt-3'>
+                <span className='text-gray-500 text-xs'>{new Date(task.createdAt).toLocaleDateString()}</span>
+            </div>
+        </div>
+    );
+};
+
+export default TaskCard;
