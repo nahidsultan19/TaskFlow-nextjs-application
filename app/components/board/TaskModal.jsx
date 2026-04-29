@@ -9,6 +9,7 @@ const TaskModal = ({ onClose, onSubmit }) => {
         e.preventDefault()
         setSubmitting(true)
         const formData = new FormData(e.target)
+        console.log(formData)
         await onSubmit({
             title: formData.get('title'),
             description: formData.get('description'),
@@ -22,7 +23,7 @@ const TaskModal = ({ onClose, onSubmit }) => {
 
 
     return (
-        <div className="fixed insert-0 bg-black/60 flex items-center justify-center z-50 p-4">
+        <div className="fixed insert-0 bg-black/60 flex items-center justify-center z-50 p-4 w-full">
             <div className="bg-gray-900 boerder border-gray-800 rounded-2xl w-full max-w-md p-6">
                 <div className="flex items-center justify-between mb-6">
                     <h2 className="text-white font-semibold text-lg">New Task</h2>

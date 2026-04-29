@@ -14,7 +14,7 @@ const COLUMNS = ['todo', 'inprogress', 'done']
 
 const KanbanBoard = () => {
     const { user } = useAuth()
-    const { tasks = [], loading } = useTasks(user?.uid)
+    const { tasks = [], loading, createTask } = useTasks(user?.uid)
     const [activeTask, setActiveTask] = useState(null)
     const [showModal, setShowModal] = useState(false)
 
@@ -84,7 +84,7 @@ const KanbanBoard = () => {
 
             {/* modal  */}
             {showModal && (
-                <TaskModal onClose={() => setShowModal(!showModal)} />
+                <TaskModal onClose={() => setShowModal(!showModal)} onSubmit={createTask} />
             )}
 
         </div>
