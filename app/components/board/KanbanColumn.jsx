@@ -23,7 +23,7 @@ const columnStyles = {
     },
 }
 
-const KanbanColumn = ({ id, tasks = [], OnDelete }) => {
+const KanbanColumn = ({ id, tasks = [], onDelete }) => {
     const { setNodeRef, isOver } = useDroppable({ id })
     const style = columnStyles[id]
 

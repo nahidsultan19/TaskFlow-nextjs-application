@@ -37,6 +37,16 @@ export function useTasks(userId) {
         }
     }
 
-    return { tasks, loading, createTask }
+    const deleteTask = async (id) => {
+        try {
+            setTasks((prev) => prev.filter((t) => t._id !== id))
+            await fetch(`/api/tasks/${id}`, { method: 'DELETE' })
+        } catch (error) {
+            console.error('Failed to delete task:', error);
+            fetchTasks()
+        }
+    }
+
+    return { tasks, loading, createTask, deleteTask }
 }
 

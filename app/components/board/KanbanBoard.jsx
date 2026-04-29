@@ -14,9 +14,10 @@ const COLUMNS = ['todo', 'inprogress', 'done']
 
 const KanbanBoard = () => {
     const { user } = useAuth()
-    const { tasks = [], loading, createTask } = useTasks(user?.uid)
+    const { tasks = [], loading, createTask, deleteTask } = useTasks(user?.uid)
     const [activeTask, setActiveTask] = useState(null)
     const [showModal, setShowModal] = useState(false)
+
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -28,7 +29,9 @@ const KanbanBoard = () => {
     )
 
     const getTasksByStatus = status => {
-        tasks.filter((t) => t.status === status)
+        const filtered = tasks.filter((t) => t.status === status)
+        console.log(`${status}: `, filtered);
+        return filtered;
     }
 
     const handleDragStart = event => {
@@ -53,7 +56,7 @@ const KanbanBoard = () => {
         }
     }
 
-    return (
+    if (loading) return (
         <div className='h-full flex flex-col'>
             <div className='flex items-center justify-between mb-6'>
                 <div>
@@ -70,7 +73,7 @@ const KanbanBoard = () => {
             <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={handleDragStart}>
                 <div>
                     {COLUMNS.map((col) => (
-                        <KanbanColumn key={col} id={col} tasks={getTasksByStatus(col)} />
+                        <KanbanColumn key={col} id={col} tasks={getTasksByStatus(col)} onDelete={deleteTask} />
                     ))}
                 </div>
 
@@ -86,7 +89,6 @@ const KanbanBoard = () => {
             {showModal && (
                 <TaskModal onClose={() => setShowModal(!showModal)} onSubmit={createTask} />
             )}
-
         </div>
     );
 };
