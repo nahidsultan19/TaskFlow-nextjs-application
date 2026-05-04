@@ -14,7 +14,7 @@ const COLUMNS = ['todo', 'inprogress', 'done']
 
 const KanbanBoard = () => {
     const { user } = useAuth()
-    const { tasks = [], loading, createTask, deleteTask } = useTasks(user?.uid)
+    const { tasks = [], loading, createTask, deleteTask, updateTask } = useTasks(user?.uid)
     const [activeTask, setActiveTask] = useState(null)
     const [showModal, setShowModal] = useState(false)
 
@@ -35,12 +35,12 @@ const KanbanBoard = () => {
     }
 
     const handleDragStart = event => {
-        const task = tasks.find((f) => t._id === event.active.id)
+        const task = tasks.find((t) => t._id === event.active.id)
         setActiveTask(task);
     }
 
     const handleDragEnd = event => {
-        const { Active, over } = event;
+        const { active, over } = event;
         setActiveTask(null)
 
         if (!over) return
@@ -52,7 +52,7 @@ const KanbanBoard = () => {
         const newStatus = COLUMNS.includes(over.id) ? over.id : tasks.find((t) => t._id === over.id)?.status
 
         if (newStatus && newStatus !== activeTask.status) {
-
+            updateTask(active.id, { status: newStatus })
         }
     }
 
@@ -70,7 +70,7 @@ const KanbanBoard = () => {
                     Add Task
                 </button>
             </div>
-            <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={handleDragStart}>
+            <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
                 <div>
                     {COLUMNS.map((col) => (
                         <KanbanColumn key={col} id={col} tasks={getTasksByStatus(col)} onDelete={deleteTask} />
@@ -80,7 +80,7 @@ const KanbanBoard = () => {
                 {/* drag overly */}
                 <DragOverlay>
                     {activeTask && (
-                        <TaskCard task={activeTask} />
+                        <TaskCard task={activeTask} onDelete={() => { }} />
                     )}
                 </DragOverlay>
             </DndContext>

@@ -37,6 +37,22 @@ export function useTasks(userId) {
         }
     }
 
+
+    const updateTask = async (id, updates) => {
+        try {
+            //optimistic update
+            setTasks((prev) => prev.map((t) => t._id === id ? { ...t, ...updates } : t))
+            await fetch(`/api/tasks/${id}`, {
+                method: 'PATCH',
+                header: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updates)
+            })
+        } catch (error) {
+            console.error('Failed to update task:', error)
+            fetchTasks()
+        }
+    }
+
     const deleteTask = async (id) => {
         try {
             setTasks((prev) => prev.filter((t) => t._id !== id))
@@ -47,6 +63,6 @@ export function useTasks(userId) {
         }
     }
 
-    return { tasks, loading, createTask, deleteTask }
+    return { tasks, loading, createTask, deleteTask, updateTask }
 }
 
