@@ -5,10 +5,11 @@ import { taskModel } from "@/models/Task"
 export async function PATCH(req, { params }) {
     try {
         await connectDB();
-        const { id } = params
+        const { id } = await params
+        console.log('Updating task id:', id)
         const body = await req.json()
-        const task = await taskModel.findByIdAndUpdate(id, body, { new: true })
-
+        const task = await taskModel.findByIdAndUpdate(id, { $set: body }, { new: true })
+        console.log(task)
         if (!task) {
             return Response.json({ error: 'Task not found' }, { status: 404 })
         }

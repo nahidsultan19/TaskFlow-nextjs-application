@@ -49,7 +49,19 @@ const KanbanBoard = () => {
         if (!activeTask) return;
 
         // check if dropped on a column
-        const newStatus = COLUMNS.includes(over.id) ? over.id : tasks.find((t) => t._id === over.id)?.status
+        let newStatus = null
+        if (COLUMNS.includes(over.id)) {
+            newStatus = over.id
+        } else {
+            const overTask = tasks.find((t) => t._id === over.id)
+            if (overTask) {
+                newStatus = overTask.status
+            }
+        }
+        console.log('Active task:', activeTask.title)
+        console.log('New status:', newStatus)
+        console.log('Old status:', activeTask.status)
+
 
         if (newStatus && newStatus !== activeTask.status) {
             updateTask(active.id, { status: newStatus })
