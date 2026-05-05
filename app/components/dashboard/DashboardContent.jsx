@@ -66,7 +66,7 @@ const DashboardComponent = () => {
     const { user } = useAuth()
     const { stats, loading } = useStats(user?.uid)
     return (
-        <div className="space-y-6">
+        <div className="space-y-7">
             <div>
                 <h2 className="text-xl font-semibold text-white">
                     Welcome back, {user?.displayName?.split(' ')[0] || 'there'} 👋

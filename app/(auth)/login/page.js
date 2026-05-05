@@ -1,12 +1,11 @@
-'use client'
+
 
 import LoginForm from '@/app/components/auth/LoginForm'
 import { Suspense } from 'react'
 
-// export const metadata = {
-//     title: 'Login | TaskFlow',
-//     description: 'Sign in to your TaskFlow account',
-// }
+export const metadata = {
+    title: 'Login | TaskFlow'
+}
 
 export default function LoginPage() {
     return (
