@@ -58,9 +58,7 @@ const KanbanBoard = () => {
                 newStatus = overTask.status
             }
         }
-        console.log('Active task:', activeTask.title)
-        console.log('New status:', newStatus)
-        console.log('Old status:', activeTask.status)
+
 
 
         if (newStatus && newStatus !== activeTask.status) {
@@ -83,9 +81,11 @@ const KanbanBoard = () => {
                 </button>
             </div>
             <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-                <div>
+                <div className="">
                     {COLUMNS.map((col) => (
-                        <KanbanColumn key={col} id={col} tasks={getTasksByStatus(col)} onDelete={deleteTask} />
+                        <div key={col} className="min-w-72 flex-1 py-1">
+                            <KanbanColumn id={col} tasks={getTasksByStatus(col)} onDelete={deleteTask} />
+                        </div>
                     ))}
                 </div>
 

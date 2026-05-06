@@ -85,7 +85,7 @@ const DashboardComponent = () => {
                         <div className={`p-2 rounded-lg ${stat.bg} ${stat.color}`}>
                             {stat.icon}
                         </div>
-                        <p className={`text-3xl font-semibold ${stat.color}`}>
+                        <p className={`text-3xl ml-1 font-semibold ${stat.color}`}>
                             {loading ? (
                                 <span className="w-8 h-6 bg-gray-700 rounded animate-pulse block" />
                             ) : (stats[stat.key] ?? 0)}

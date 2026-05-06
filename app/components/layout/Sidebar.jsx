@@ -59,7 +59,7 @@ const navItems = [
     },
 ]
 
-export function Sidebar() {
+export function Sidebar({ isOpen, onClose }) {
     const pathname = usePathname()
     const { user, logout } = useAuth()
 
@@ -69,79 +69,104 @@ export function Sidebar() {
     }
 
     return (
-        <div className="w-60 h-screen bg-gray-900 border-r border-gray-800 flex flex-col">
+        <>
+            {/* Mobile overlay */}
+            {isOpen && (
+                <div
+                    className="fixed inset-0 bg-black/60 z-20 lg:hidden"
+                    onClick={onClose}
+                />
+            )}
 
-            {/* Logo */}
-            <div className="p-5 border-b border-gray-800">
-                <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center">
-                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                            <rect x="2" y="2" width="5" height="5" rx="1" fill="white" />
-                            <rect x="9" y="2" width="5" height="5" rx="1" fill="white" opacity="0.6" />
-                            <rect x="2" y="9" width="5" height="5" rx="1" fill="white" opacity="0.6" />
-                            <rect x="9" y="9" width="5" height="5" rx="1" fill="white" />
-                        </svg>
-                    </div>
-                    <span className="text-white font-semibold text-base">TaskFlow</span>
-                </div>
-            </div>
+            {/* Sidebar */}
+            <div className={`
+            fixed lg:static inset-y-0 left-0 z-30
+            w-60 h-screen bg-gray-900 border-r border-gray-800
+            flex flex-col transform transition-transform duration-300
+            ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        `}>
 
-            {/* Navigation */}
-            <nav className="flex-1 p-3 space-y-1">
-                {navItems.map((item) => {
-                    const isActive = pathname === item.href
-                    return (
-                        <Link
-                            key={item.href}
-                            href={item.href}
-                            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all ${isActive
-                                ? 'bg-indigo-600 text-white'
-                                : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-                                }`}
-                        >
-                            {item.icon}
-                            {item.label}
-                        </Link>
-                    )
-                })}
-            </nav>
-
-            {/* User section */}
-            <div className="p-3 border-t border-gray-800">
-                <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-800 transition cursor-pointer">
-                    <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-medium overflow-hidden flex-shrink-0">
-                        {user?.photoURL ? (
-                            <Image
-                                src={user.photoURL}
-                                alt="avatar"
-                                width={32}
-                                height={32}
-                                className="rounded-full object-cover"
-                            />
-                        ) : (
-                            <span>{getInitials(user?.displayName || user?.email)}</span>
-                        )}
+                {/* Logo */}
+                <div className="p-5 border-b border-gray-800 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center">
+                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                                <rect x="2" y="2" width="5" height="5" rx="1" fill="white" />
+                                <rect x="9" y="2" width="5" height="5" rx="1" fill="white" opacity="0.6" />
+                                <rect x="2" y="9" width="5" height="5" rx="1" fill="white" opacity="0.6" />
+                                <rect x="9" y="9" width="5" height="5" rx="1" fill="white" />
+                            </svg>
+                        </div>
+                        <span className="text-white font-semibold text-base">TaskFlow</span>
                     </div>
-                    <div className="flex-1 min-w-0">
-                        <p className="text-white text-xs font-medium truncate">
-                            {user?.displayName || 'User'}
-                        </p>
-                        <p className="text-gray-500 text-xs truncate">{user?.email}</p>
-                    </div>
+                    {/* Close button mobile */}
                     <button
-                        onClick={logout}
-                        className="text-gray-500 hover:text-red-400 transition"
-                        title="Logout"
+                        onClick={onClose}
+                        className="lg:hidden text-gray-400 hover:text-white transition"
                     >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
-                            <polyline points="16 17 21 12 16 7" />
-                            <line x1="21" y1="12" x2="9" y2="12" />
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M18 6L6 18M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
-            </div>
 
-        </div>
+                {/* Navigation */}
+                <nav className="flex-1 p-3 space-y-1">
+                    {navItems.map((item) => {
+                        const isActive = pathname === item.href
+                        return (
+                            <Link
+                                key={item.href}
+                                href={item.href}
+                                onClick={onClose}
+                                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all ${isActive
+                                    ? 'bg-indigo-600 text-white'
+                                    : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                                    }`}
+                            >
+                                {item.icon}
+                                {item.label}
+                            </Link>
+                        )
+                    })}
+                </nav>
+
+                {/* User section */}
+                <div className="p-3 border-t border-gray-800">
+                    <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-800 transition cursor-pointer">
+                        <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-medium flex-shrink-0 overflow-hidden">
+                            {user?.photoURL ? (
+                                <Image
+                                    src={user.photoURL}
+                                    alt="avatar"
+                                    width={32}
+                                    height={32}
+                                    className="rounded-full object-cover"
+                                />
+                            ) : (
+                                getInitials(user?.displayName || user?.email)
+                            )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-white text-xs font-medium truncate">
+                                {user?.displayName || 'User'}
+                            </p>
+                            <p className="text-gray-500 text-xs truncate">{user?.email}</p>
+                        </div>
+                        <button
+                            onClick={logout}
+                            className="text-gray-500 hover:text-red-400 transition"
+                            title="Logout"
+                        >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+                                <polyline points="16 17 21 12 16 7" />
+                                <line x1="21" y1="12" x2="9" y2="12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </>
     )
 }
