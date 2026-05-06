@@ -28,7 +28,7 @@ export default async function RootLayout({ children }) {
     >
       <body className="min-h-full h-full flex flex-col bg-gray-950" suppressHydrationWarning>
         <AuthProvider>
-          <main className="py-8">{children}</main>
+          <main className="">{children}</main>
         </AuthProvider>
 
       </body>

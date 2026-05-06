@@ -33,7 +33,7 @@ export function useTasks(userId) {
             setTasks((prev) => [data.task, ...prev])
             return data.task
         } catch (error) {
-            console.log('Failed to create task: ', error)
+            console.error('Failed to create task: ', error)
         }
     }
 

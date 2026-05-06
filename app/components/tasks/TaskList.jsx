@@ -84,7 +84,7 @@ const TaskList = () => {
 
                     <div className="divide-y divide-gray-800">
                         {tasks.map((task) => (
-                            <div className="grid grid-cols-12 gap-4 px-6 py-4 hover:bg-gray-800/50 transition group">
+                            <div key={task} className="grid grid-cols-12 gap-4 px-6 py-4 hover:bg-gray-800/50 transition group">
                                 {/* title and description  */}
                                 <div className="col-span-5">
                                     <p className="text-white text-sm font-medium">{task.title}</p>

@@ -30,7 +30,7 @@ const Header = () => {
                     </svg>
                 </button>
 
-                <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center jutify-center text-white text-sm font-medium overflow-hidden">
+                <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center font-medium text-md text-white overflow-hidden">
                     {user?.photoURL ? (
                         <Image
                             src={user.photoURL}

@@ -12,7 +12,6 @@ export function useTaskList(userId) {
             setLoading(true)
             const res = await fetch(`/api/tasks?userId=${userId}`)
             const data = await res.json()
-            console.log('Task list data:', data)
             setTasks(Array.isArray(data.tasks) ? data.tasks : [])
         } catch (error) {
             console.error('Fialed to fetch tasks: ', error)
@@ -30,7 +29,6 @@ export function useTaskList(userId) {
 
     const deleteTask = async (id) => {
         try {
-            console.log('Deleting task id: ', id)
             setTasks((prev) => prev.filter((t) => t._id !== id))
             await fetch(`/api/tasks/${id}`, { method: 'DELETE' })
         } catch (error) {

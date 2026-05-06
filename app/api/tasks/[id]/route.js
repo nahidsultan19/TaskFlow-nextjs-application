@@ -6,10 +6,8 @@ export async function PATCH(req, { params }) {
     try {
         await connectDB();
         const { id } = await params
-        console.log('Updating task id:', id)
         const body = await req.json()
         const task = await taskModel.findByIdAndUpdate(id, { $set: body }, { new: true })
-        console.log(task)
         if (!task) {
             return Response.json({ error: 'Task not found' }, { status: 404 })
         }
@@ -24,9 +22,7 @@ export async function DELETE(req, { params }) {
     try {
         await connectDB()
         const { id } = await params
-        console.log('Deleting task with id', id)
         const task = await taskModel.findByIdAndDelete(id)
-        console.log('Delete task: ', task)
         if (!task) {
             return Response.json({ error: 'Task not found' }, { status: 404 })
         }
