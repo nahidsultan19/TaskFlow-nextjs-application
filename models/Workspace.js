@@ -32,4 +32,4 @@ const WorkspaceSchema = new mongoose.Schema(
     { timestamps: true }
 )
 
-export const workspaceModel = mongoose.models.Task || mongoose.model("Workspace", WorkspaceSchema)
+export const workspaceModel = mongoose.models.Workspace || mongoose.model("Workspace", WorkspaceSchema)

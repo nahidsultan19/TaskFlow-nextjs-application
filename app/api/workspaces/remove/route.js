@@ -7,7 +7,7 @@ export async function POST(req) {
         const body = await req.json()
         const { workspaceId, memberId, ownerId } = body
 
-        if (!workspaceId || !ownerId) {
+        if (!workspaceId || !memberId) {
             return Response.json({ error: 'workspaceId and memberId are required' }, { status: 400 })
         }
         const workspace = await workspaceModel.findById(workspaceId)

@@ -16,13 +16,17 @@ export async function POST(req) {
         if (!workspace) {
             return Response.json({ error: 'Workspace not found' }, { status: 404 })
         }
+        // Only owner can invite
+        if (workspace.ownerId !== ownerId) {
+            return Response.json({ error: 'Only owner can invite members' }, { status: 403 })
+        }
         // if already a member
         const alreadyMember = workspace.members.some((m) => m.email === email)
         if (alreadyMember) {
             return Response.json({ error: 'User is already a member' }, { status: 400 })
         }
         //add member as pending
-        workspace.member.push({ email, role: 'member', status: 'pending' })
+        workspace.members.push({ email, role: 'member', status: 'pending' })
         await workspace.save()
         return Response.json({ workspace })
     } catch (error) {
