@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut, updateProfile } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { useSearchParams } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 const SignupForm = () => {
     const router = useRouter();
@@ -56,6 +57,7 @@ const SignupForm = () => {
             const result = await createUserWithEmailAndPassword(auth, email, password)
             await updateProfile(result.user, { displayName: name });
             await signOut(auth)
+            toast.success("Account Created Successfully!")
             router.push("/login?registered=true")
         } catch (error) {
             isSigninUp.current = false;

@@ -6,6 +6,7 @@ import { deleteUser, EmailAuthProvider, reauthenticateWithCredential, updatePass
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 const SettingsContent = () => {
     const { user, logout } = useAuth()
@@ -14,7 +15,6 @@ const SettingsContent = () => {
     // display name state 
     const [displayName, setDisplayName] = useState(user?.displayName || '')
     const [nameLoading, setNameLoading] = useState(false)
-    const [nameSuccess, setNameSuccess] = useState('')
     const [nameError, setNameError] = useState('')
 
     // password state 
@@ -38,8 +38,10 @@ const SettingsContent = () => {
 
         try {
             await updateProfile(auth.currentUser, { displayName: newName })
+            toast.success('Name updated successfully!')
             setNameSuccess('Name updated successfully')
         } catch (error) {
+            toast.error(error.message)
             setNameError(error.message)
         } finally {
             setNameLoading(false)
@@ -74,9 +76,11 @@ const SettingsContent = () => {
             const credential = EmailAuthProvider.credential(user.email, currentPassword)
             await reauthenticateWithCredential(auth.currentUser, credential)
             await updatePassword(auth.currentUser, newPassword)
+            toast.success('Password updated successfully!')
             setPasswordSuccess("Password updated successfully")
             e.target.reset()
         } catch (error) {
+            toast.error(error.message)
             if (error.code === 'auth/wrong-password') {
                 setPasswordError('CUrrent password is incorrect')
             } else if (error.code === 'auth/too-many-request') {
@@ -101,6 +105,7 @@ const SettingsContent = () => {
             const credential = EmailAuthProvider.credential(user.email, password)
             await reauthenticateWithCredential(auth.currentUser, credential)
             await deleteUser(auth.currentUser)
+            toast.success('Account deleted Successfully!')
             router.push('/signup')
         } catch (error) {
             if (error.code === 'auth/wrong-password') {
@@ -156,9 +161,6 @@ const SettingsContent = () => {
                         <label htmlFor="" className="text-xs font-medium text-gray-400 block mb-1 5">Display Name</label>
                         <input type="text" name="displayName" defaultValue={user?.displayName || ''} placeholder="Your Name" required className="w-full px-4 py-2 5 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
                     </div>
-                    {nameSuccess && (
-                        <p className="text-green-400 text-sm">{nameSuccess}</p>
-                    )}
                     {nameError && (
                         <p className="text-red-400 text-sm">{nameError}</p>
                     )}

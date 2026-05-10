@@ -3,6 +3,7 @@ import { useAuth } from '@/app/hooks/useAuth';
 import Image from 'next/image';
 import { useState } from 'react';
 import { useWorkspace } from '@/app/hooks/useWorkspace';
+import toast from 'react-hot-toast';
 
 
 const getInitials = (name) => {
@@ -41,9 +42,11 @@ const MembersContent = () => {
         const result = await inviteMember(inviteEmail)
         if (result.success) {
             setSuccess('Invite sent successfully')
+            toast.success('Invite sent successfully!')
             setInviteEmail('')
             setTimeout(() => setSuccess(''), 3000)
         } else {
+            toast.error(result.error)
             setError(result.error)
         }
         setInviteLoading(false)
@@ -52,6 +55,10 @@ const MembersContent = () => {
     const handleRemove = async (memberId) => {
         const result = await removeMember(memberId)
         if (!result.success) {
+            toast.success('Member removed!')
+            setError(result.error)
+        } else {
+            toast.error('Member removed!')
             setError(result.error)
         }
     }

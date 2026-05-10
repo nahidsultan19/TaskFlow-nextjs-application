@@ -5,6 +5,7 @@ import { useAuth } from "@/app/hooks/useAuth";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "@/lib/firebase"
+import toast from "react-hot-toast";
 
 const LoginForm = () => {
     const [error, setError] = useState('')
@@ -31,6 +32,7 @@ const LoginForm = () => {
 
         try {
             await signInWithEmailAndPassword(auth, email, password)
+            toast.success('Welcome back!')
             router.push('/dashboard')
         } catch (error) {
             setError("Invalid email or password")
@@ -46,6 +48,7 @@ const LoginForm = () => {
         try {
             const provider = new GoogleAuthProvider();
             await signInWithPopup(auth, provider);
+            toast.success('Welcome back!')
             router.push("/dashboard")
         } catch (error) {
             setError("Google sign in Failed")

@@ -46,6 +46,7 @@ const AuthProvider = ({ children }) => {
 
     const logout = async () => {
         await signOut(auth);
+        toast.success('Logged out successfully!')
         router.push("/login")
     }
 

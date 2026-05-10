@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 export function useTaskList(userId) {
     const [tasks, setTasks] = useState()
@@ -31,6 +32,7 @@ export function useTaskList(userId) {
         try {
             setTasks((prev) => prev.filter((t) => t._id !== id))
             await fetch(`/api/tasks/${id}`, { method: 'DELETE' })
+            toast.success("Task Deleted!")
         } catch (error) {
             console.error('Failed to delete task: ', error)
             fetchTasks()
