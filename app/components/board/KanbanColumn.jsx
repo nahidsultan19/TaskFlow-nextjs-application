@@ -23,7 +23,7 @@ const columnStyles = {
     },
 }
 
-const KanbanColumn = ({ id, tasks = [], onDelete }) => {
+const KanbanColumn = ({ id, tasks = [], onDelete, onEdit }) => {
     const { setNodeRef, isOver } = useDroppable({ id })
     const style = columnStyles[id]
 
@@ -41,7 +41,7 @@ const KanbanColumn = ({ id, tasks = [], onDelete }) => {
             <div className='flex-1 p-3 space-y-3 min-h-32'>
                 <SortableContext items={tasks.map((t) => t._id)} strategy={verticalListSortingStrategy}>
                     {tasks.map((task) => (
-                        <TaskCard key={task._id} task={task} onDelete={onDelete} />
+                        <TaskCard key={task._id} task={task} onDelete={onDelete} onEdit={onEdit} />
                     ))}
                 </SortableContext>
                 {tasks.length === 0 && (

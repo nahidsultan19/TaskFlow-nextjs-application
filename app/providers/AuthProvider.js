@@ -5,6 +5,7 @@ import { AuthContext } from "../context"
 import { useRouter } from "next/navigation"
 import { onAuthStateChanged, signOut } from "firebase/auth"
 import { auth } from "@/lib/firebase"
+import toast from "react-hot-toast"
 
 const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null)

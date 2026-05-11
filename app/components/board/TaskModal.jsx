@@ -3,10 +3,11 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
-const TaskModal = ({ onClose, onSubmit }) => {
+const TaskModal = ({ onClose, onSubmit, task = null }) => {
     const [submitting, setSubmitting] = useState(false)
     const [mounted, setMounted] = useState(false)
 
+    const isEditing = !!task // true if editing, false if creating
 
     useEffect(() => {
         setMounted(true)
@@ -24,7 +25,7 @@ const TaskModal = ({ onClose, onSubmit }) => {
             title: formData.get('title'),
             description: formData.get('description'),
             priority: formData.get('priority'),
-            status: 'todo'
+            status: formData.get('status') || 'todo'
         })
 
         setSubmitting(false)
@@ -36,7 +37,7 @@ const TaskModal = ({ onClose, onSubmit }) => {
         <div className="fixed insert-0 flex items-center justify-center z-50 p-4 md:w-full w-92">
             <div className="bg-gray-900 boerder border-gray-800 rounded-2xl w-full max-w-md p-6">
                 <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-white font-semibold text-lg">New Task</h2>
+                    <h2 className="text-white font-semibold text-lg">{isEditing ? "Edit Task" : "New Task"}</h2>
                     <button onClick={() => onClose()} className="text-gray-400 hover:text-white transition">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M18 6L6 18M6 6l12 12" />
@@ -51,6 +52,7 @@ const TaskModal = ({ onClose, onSubmit }) => {
                             type="text"
                             name="title"
                             placeholder="Task title"
+                            defaultValue={task?.title || ''}
                             required
                             className="w-full px-4 py-2.5 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         />
@@ -62,6 +64,7 @@ const TaskModal = ({ onClose, onSubmit }) => {
                         <textarea
                             name="description"
                             placeholder="Task description (optional)"
+                            defaultValue={task?.description || ''}
                             rows={3}
                             className="w-full px-4 py-2.5 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
                         />
@@ -72,7 +75,7 @@ const TaskModal = ({ onClose, onSubmit }) => {
                         </label>
                         <select
                             name="priority"
-                            defaultValue="medium"
+                            defaultValue={task?.priority || 'medium'}
                             className="w-full px-4 py-2.5 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         >
                             <option value="low">Low</option>
@@ -80,6 +83,23 @@ const TaskModal = ({ onClose, onSubmit }) => {
                             <option value="high">High</option>
                         </select>
                     </div>
+                    {/* Show status only when editing */}
+                    {isEditing && (
+                        <div>
+                            <label className="text-xs font-medium text-gray-400 block mb-1.5">
+                                Status
+                            </label>
+                            <select
+                                name="status"
+                                defaultValue={task?.status || 'todo'}
+                                className="w-full px-4 py-2.5 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            >
+                                <option value="todo">To Do</option>
+                                <option value="inprogress">In Progress</option>
+                                <option value="done">Done</option>
+                            </select>
+                        </div>
+                    )}
 
                     <div className="flex gap-3 pt-2">
                         <button
@@ -97,7 +117,10 @@ const TaskModal = ({ onClose, onSubmit }) => {
                             disabled={submitting}
                             className="flex-1 px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium transition disabled:opacity-50"
                         >
-                            {submitting ? 'Creating...' : 'Create Task'}
+                            {submitting
+                                ? isEditing ? 'Saving' : 'Creating..'
+                                : isEditing ? "Save Changes" : 'Create Task'
+                            }
                         </button>
                     </div>
                 </form>
