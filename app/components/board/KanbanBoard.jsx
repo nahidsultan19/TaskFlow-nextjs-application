@@ -31,7 +31,6 @@ const KanbanBoard = () => {
 
     const getTasksByStatus = status => {
         const filtered = tasks.filter((t) => t.status === status)
-        console.log(`${status}: `, filtered);
         return filtered;
     }
 
@@ -82,15 +81,22 @@ const KanbanBoard = () => {
                 description: data.description,
                 priority: data.priority,
                 status: data.status || editingTask.status,
+                dueDate: data.dueDate || null
             })
         } else {
-            await createTask({ ...data, status: 'todo' })
+            await createTask({
+                title: data.title,
+                description: data.description,
+                priority: data.priority,
+                status: 'todo',
+                dueDate: data.dueDate || null,
+            })
         }
     }
 
 
 
-    if (loading) return (
+    return (
         <div className='h-full flex flex-col'>
             <div className='flex items-center justify-between mb-6'>
                 <div>

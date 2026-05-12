@@ -1,6 +1,7 @@
 'use client'
 
 import { useAuth } from '@/app/hooks/useAuth'
+import { getInitials } from '@/utils/getInitials'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -63,10 +64,10 @@ export function Sidebar({ isOpen, onClose }) {
     const pathname = usePathname()
     const { user, logout } = useAuth()
 
-    const getInitials = (name) => {
-        if (!name) return 'U'
-        return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
-    }
+    // const getInitials = (name) => {
+    //     if (!name) return 'U'
+    //     return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
+    // }
 
     return (
         <>

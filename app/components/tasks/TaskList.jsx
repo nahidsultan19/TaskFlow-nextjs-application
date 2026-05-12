@@ -29,19 +29,20 @@ const TaskList = () => {
 
     if (loading) return (
         <div className="flex items-center justify-center h-full">
-            <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animation-spin"></div>
+            <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
     )
 
     return (
         <div className="space-y-6">
             {/* header  */}
-            <div className="grid grid-cols-12 gap-4 px-6 py-3 border-b border-gray-800">
-                <p className="col-span-6 md:col-span-5 text-xs font-medium text-gray-400">Title</p>
-                <p className="hidden md:block md:col-span-2 text-xs font-medium text-gray-400">Status</p>
-                <p className="col-span-4 md:col-span-2 text-xs font-medium text-gray-400">Priority</p>
-                <p className="hidden md:block md:col-span-2 text-xs font-medium text-gray-400">Created</p>
-                <p className="col-span-2 md:col-span-1 text-xs font-medium text-gray-400"></p>
+            <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-3 border-b border-gray-800">
+                <p className="col-span-4 text-xs font-medium text-gray-400">Title</p>
+                <p className="col-span-2 text-xs font-medium text-gray-400">Status</p>
+                <p className="col-span-2 text-xs font-medium text-gray-400">Priority</p>
+                <p className="col-span-2 text-xs font-medium text-gray-400">Due Date</p>
+                <p className="col-span-1 text-xs font-medium text-gray-400">Created</p>
+                <p className="col-span-1 text-xs font-medium text-gray-400"></p>
             </div>
             {/* filters  */}
             <div className="flex items-center gap-3 flex-wrap">
@@ -53,9 +54,9 @@ const TaskList = () => {
                 </div>
 
                 {/* priority filter  */}
-                <div className="flex-items-center gap-2 bg-gray-900 border-gray-800 rounded-lg p-1">
+                <div className="flex items-center gap-2 bg-gray-900 border border-gray-800 rounded-lg p-1">
                     {['all', 'high', 'medium', 'low'].map((priority) => (
-                        <button key={priority} onClick={() => setFilter((prev) => ({ ...prev, priority }))} className={`px-3 py-1.5 rounded-md text-xs font-medium transition ${filter.priority === 'priority' ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white'}`}>
+                        <button key={priority} onClick={() => setFilter((prev) => ({ ...prev, priority }))} className={`px-3 py-1.5 rounded-md text-xs font-medium transition ${filter.priority === priority ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white'}`}>
                             {priority === 'all' ? 'All Priority' : priority.charAt(0).toUpperCase() + priority.slice(1)}
                         </button>
                     ))}
@@ -67,15 +68,16 @@ const TaskList = () => {
             {tasks.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-48 bg-gray-900 border border-gray-800 rounded-xl">
                     <p className="text-gray-400 text-sm">No Tasks found</p>
-                    <p className="text-gray-600 text-sm mt-1">Try chnaging your filters</p>
+                    <p className="text-gray-600 text-sm mt-1">Try changing your filters</p>
                 </div>
             ) : (
                 <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
-                    <div className="grid grid-cols-12 gap-4 px-6 py-3 border-b border-gray-800">
-                        <p className="col-span-5 text-xs font-medium text-gray-400">Title</p>
+                    <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-3 border-b border-gray-800">
+                        <p className="col-span-4 text-xs font-medium text-gray-400">Title</p>
                         <p className="col-span-2 text-xs font-medium text-gray-400">Status</p>
                         <p className="col-span-2 text-xs font-medium text-gray-400">Priority</p>
-                        <p className="col-span-2 text-xs font-medium text-gray-400">Created</p>
+                        <p className="col-span-2 text-xs font-medium text-gray-400">Due Date</p>
+                        <p className="col-span-1 text-xs font-medium text-gray-400">Created</p>
                         <p className="col-span-1 text-xs font-medium text-gray-400"></p>
                     </div>
 
@@ -83,41 +85,113 @@ const TaskList = () => {
 
                     <div className="divide-y divide-gray-800">
                         {tasks.map((task) => (
-                            <div key={task._id} className="grid grid-cols-12 gap-4 px-6 py-4 hover:bg-gray-800/50 transition group">
-                                <div className="col-span-6 md:col-span-5">
-                                    <p className="text-white text-sm font-medium">{task.title}</p>
-                                    {task.description && (
-                                        <p className="text-gray-500 text-xs mt-0.5 truncate">{task.description}</p>
-                                    )}
+                            <div key={task._id} className="px-6 py-4 hover:bg-gray-800/50 transition group border-b border-gray-800 last:border-0">
+
+                                {/* Mobile layout */}
+                                <div className="md:hidden">
+                                    <div className="flex items-start justify-between gap-2">
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-white text-sm font-medium">{task.title}</p>
+                                            {task.description && (
+                                                <p className="text-gray-500 text-xs mt-0.5 truncate">{task.description}</p>
+                                            )}
+                                        </div>
+                                        <button
+                                            onClick={() => deleteTask(task._id)}
+                                            className="text-gray-500 hover:text-red-400 transition flex-shrink-0"
+                                        >
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                <polyline points="3 6 5 6 21 6" />
+                                                <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
+                                                <path d="M10 11v6M14 11v6" />
+                                                <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <div className="flex items-center gap-2 mt-2 flex-wrap">
+                                        <span className={`text-xs px-2 py-0.5 rounded-full border ${statusStyles[task.status]}`}>
+                                            {statusLabels[task.status]}
+                                        </span>
+                                        <span className={`text-xs px-2 py-0.5 rounded-full border ${priorityStyles[task.priority]}`}>
+                                            {task.priority}
+                                        </span>
+                                        {/* Due date mobile */}
+                                        {task.dueDate && (
+                                            <span className={`text-xs px-2 py-0.5 rounded-full ${new Date(task.dueDate) < new Date() && task.status !== 'done'
+                                                ? 'bg-red-500/10 text-red-400'
+                                                : 'bg-gray-700 text-gray-400'
+                                                }`}>
+                                                📅 {new Date(task.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
-                                <div className="hidden md:flex md:col-span-2 items-center">
-                                    <span className={`text-xs px-2 py-0.5 rounded-full border ${statusStyles[task.status]}`}>
-                                        {statusLabels[task.status]}
-                                    </span>
+
+                                {/* Desktop layout */}
+                                <div className="hidden md:grid grid-cols-12 gap-4">
+                                    {/* Title */}
+                                    <div className="col-span-4">
+                                        <p className="text-white text-sm font-medium">{task.title}</p>
+                                        {task.description && (
+                                            <p className="text-gray-500 text-xs mt-0.5 truncate">{task.description}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Status */}
+                                    <div className="col-span-2 flex items-center">
+                                        <span className={`text-xs px-2 py-0.5 rounded-full border ${statusStyles[task.status]}`}>
+                                            {statusLabels[task.status]}
+                                        </span>
+                                    </div>
+
+                                    {/* Priority */}
+                                    <div className="col-span-2 flex items-center">
+                                        <span className={`text-xs px-2 py-0.5 rounded-full border ${priorityStyles[task.priority]}`}>
+                                            {task.priority}
+                                        </span>
+                                    </div>
+
+                                    {/* Due Date */}
+                                    <div className="col-span-2 flex items-center">
+                                        {task.dueDate ? (
+                                            <span className={`text-xs px-2 py-0.5 rounded-full ${new Date(task.dueDate) < new Date() && task.status !== 'done'
+                                                ? 'bg-red-500/10 text-red-400'
+                                                : 'bg-gray-700 text-gray-400'
+                                                }`}>
+                                                {new Date(task.dueDate).toLocaleDateString('en-US', {
+                                                    month: 'short',
+                                                    day: 'numeric',
+                                                    year: 'numeric'
+                                                })}
+                                            </span>
+                                        ) : (
+                                            <span className="text-gray-600 text-xs">No due date</span>
+                                        )}
+                                    </div>
+
+                                    {/* Created */}
+                                    <div className="col-span-1 flex items-center">
+                                        <span className="text-gray-500 text-xs">
+                                            {new Date(task.createdAt).toLocaleDateString()}
+                                        </span>
+                                    </div>
+
+                                    {/* Delete */}
+                                    <div className="col-span-1 flex items-center justify-end">
+                                        <button
+                                            onClick={() => deleteTask(task._id)}
+                                            className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-400 transition"
+                                        >
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                <polyline points="3 6 5 6 21 6" />
+                                                <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
+                                                <path d="M10 11v6M14 11v6" />
+                                                <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" />
+                                            </svg>
+                                        </button>
+                                    </div>
                                 </div>
-                                <div className="col-span-4 md:col-span-2 flex items-center">
-                                    <span className={`text-xs px-2 py-0.5 rounded-full border ${priorityStyles[task.priority]}`}>
-                                        {task.priority}
-                                    </span>
-                                </div>
-                                <div className="hidden md:flex md:col-span-2 items-center">
-                                    <span className="text-gray-500 text-xs">
-                                        {new Date(task.createdAt).toLocaleDateString()}
-                                    </span>
-                                </div>
-                                <div className="col-span-2 md:col-span-1 flex items-center justify-end">
-                                    <button
-                                        onClick={() => deleteTask(task._id)}
-                                        className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-400 transition"
-                                    >
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <polyline points="3 6 5 6 21 6" />
-                                            <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
-                                            <path d="M10 11v6M14 11v6" />
-                                            <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" />
-                                        </svg>
-                                    </button>
-                                </div>
+
                             </div>
                         ))}
                     </div>

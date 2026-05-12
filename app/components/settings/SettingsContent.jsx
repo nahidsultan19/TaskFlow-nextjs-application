@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/app/hooks/useAuth";
 import { auth } from "@/lib/firebase";
+import { getInitials } from "@/utils/getInitials";
 import { deleteUser, EmailAuthProvider, reauthenticateWithCredential, updatePassword, updateProfile } from "firebase/auth";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -118,10 +119,11 @@ const SettingsContent = () => {
         }
     }
 
-    const getInitials = name => {
-        if (!name) return 'U'
-        return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
-    }
+
+    // const getInitials = name => {
+    //     if (!name) return 'U'
+    //     return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
+    // }
 
     const isGoogleUser = user?.providerData?.[0]?.providerId === 'google.com'
 
