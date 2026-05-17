@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 
 export function useTaskList(userId) {
     const [tasks, setTasks] = useState()
     const [loading, setLoading] = useState(true)
+    const [search, setSearch] = useState('')
     const [filter, setFilter] = useState({ status: 'all', priority: 'all' })
 
     const fetchTasks = useCallback(async () => {
@@ -39,13 +40,26 @@ export function useTaskList(userId) {
         }
     }
 
-
-    const filteredTasks = Array.isArray(tasks) ? tasks.filter((task) => {
+    // filter tasks 
+    const filteredTasks = tasks?.filter((task) => {
         const statusMatch = filter.status === 'all' || task.status === filter.status
         const priorityMatch = filter.priority === 'all' || task.priority === filter.priority
-        return statusMatch && priorityMatch
-    }) : []
 
+        // search filter 
+        const searchMatch = search === '' || task.title.toLowerCase().includes(search.toLocaleLowerCase()) || task.description?.toLocaleLowerCase().includes(search.toLocaleLowerCase())
+        return statusMatch && priorityMatch && searchMatch
+    })
 
-    return { tasks: filteredTasks, loading, filter, setFilter, deleteTask }
+    // const filteredTasks = useMemo(() => {
+    //     if (!tasks) return [];
+    //     return tasks.filter((task) => {
+    //         const statusMatch = filter.status === 'all' || task.status === filter.status;
+    //         const priorityMatch = filter.priority === 'all' || task.priority === filter.priority;
+
+    //         const searchMatch = search === '' || task.title.toLowerCase().includes(search.toLocaleLowerCase()) || task.description?.toLocaleLowerCase().includes(search.toLocaleLowerCase());
+    //         return statusMatch && priorityMatch && searchMatch;
+    //     })
+    // }, [tasks, search, filter.status, filter.priority])
+
+    return { tasks: filteredTasks, search, setSearch, loading, filter, setFilter, deleteTask }
 }
