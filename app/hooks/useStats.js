@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export function useStats(userId) {
-    const [stats, setStats] = useState({ totoal: 0, todo: 0, inprogress: 0, done: 0 })
+    const [stats, setStats] = useState({ total: 0, todo: 0, inprogress: 0, done: 0, overdue: 0 })
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
@@ -9,7 +9,8 @@ export function useStats(userId) {
         fetchStats()
     }, [userId])
 
-    const fetchStats = async () => {
+    const fetchStats = useCallback(async () => {
+        if (!userId) return
         try {
             const res = await fetch(`/api/tasks/stats?userId=${userId}`)
             const data = await res.json()
@@ -19,7 +20,7 @@ export function useStats(userId) {
         } finally {
             setLoading(false)
         }
-    }
+    }, [userId])
 
     return { stats, loading }
 }

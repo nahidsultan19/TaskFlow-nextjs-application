@@ -68,6 +68,7 @@ const statsCard = [
                 <path d="M12 14v4M12 14l2 2" />
             </svg>
         ),
+        color: 'text-red-400',
         bg: 'bg-red-500/10',
         border: 'border-red-500/20'
     }
