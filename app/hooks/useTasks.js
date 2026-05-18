@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { StatesContext } from "../context";
 
 
 export function useTasks(userId) {
     const [tasks, setTasks] = useState()
     const [loading, setLoading] = useState(true)
+    const { refreshStats } = useContext(StatesContext)
 
     useEffect(() => {
         if (!userId) return
@@ -33,6 +35,7 @@ export function useTasks(userId) {
             const data = await res.json()
             setTasks((prev) => [data.task, ...prev])
             toast.success("Task Created!")
+            refreshStats()
             return data.task
         } catch (error) {
             toast.error("Failed to create task")
@@ -51,6 +54,8 @@ export function useTasks(userId) {
                 body: JSON.stringify(updates)
             })
             toast.success("Task Updated!")
+            console.log('Calling refreshStats...')
+            refreshStats()
         } catch (error) {
             toast.error("Failed to update task")
             console.error('Failed to update task:', error)
@@ -63,6 +68,7 @@ export function useTasks(userId) {
             setTasks((prev) => prev.filter((t) => t._id !== id))
             await fetch(`/api/tasks/${id}`, { method: 'DELETE' })
             toast.success("Task Deleted!")
+            refreshStats()
         } catch (error) {
             toast.error('Failed to delete task')
             console.error('Failed to delete task:', error);

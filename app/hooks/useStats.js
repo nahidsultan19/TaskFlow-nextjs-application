@@ -1,13 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { StatesContext } from "../context";
 
 export function useStats(userId) {
     const [stats, setStats] = useState({ total: 0, todo: 0, inprogress: 0, done: 0, overdue: 0 })
     const [loading, setLoading] = useState(true)
-
-    useEffect(() => {
-        if (!userId) return
-        fetchStats()
-    }, [userId])
+    const { refreshKey } = useContext(StatesContext)
 
     const fetchStats = useCallback(async () => {
         if (!userId) return
@@ -20,7 +17,14 @@ export function useStats(userId) {
         } finally {
             setLoading(false)
         }
-    }, [userId])
+    }, [userId, refreshKey])
+
+    useEffect(() => {
+        if (!userId) return
+        fetchStats()
+    }, [fetchStats])
+
+
 
     return { stats, loading }
 }
