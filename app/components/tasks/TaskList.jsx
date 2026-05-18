@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/app/hooks/useAuth";
 import { useTaskList } from "@/app/hooks/useTaskList";
+import EmptyState from "../ui/EmptyState";
 
 
 const statusStyles = {
@@ -81,28 +82,17 @@ const TaskList = () => {
             </div>
 
             {/* Table  */}
-
             {tasks.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-48 bg-gray-900 border border-gray-800 rounded-xl">
+                <div className="flex flex-col items-center justify-center h-64 bg-gray-900 border border-gray-800 rounded-xl">
                     {search ? (
-                        <>
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-gray-600 mb-3">
-                                <circle cx="11" cy="11" r="8" />
-                                <path d="M21 21l-4.35-4.35" />
-                            </svg>
-                            <p className="text-gray-400 text-sm">No tasks match "{search}"</p>
-                            <button
-                                onClick={() => setSearch('')}
-                                className="text-indigo-400 text-xs mt-2 hover:text-indigo-300 transition"
-                            >
-                                Clear search
-                            </button>
-                        </>
+                        <EmptyState
+                            type="search"
+                            search={search}
+                            onClearSearch={() => setSearch('')}
+                        />
+
                     ) : (
-                        <>
-                            <p className="text-gray-400 text-sm">No Tasks found</p>
-                            <p className="text-gray-600 text-sm mt-1">Try changing your filters</p>
-                        </>
+                        <EmptyState type="tasks" />
                     )}
                 </div>
             ) : (

@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { useWorkspace } from '@/app/hooks/useWorkspace';
 import toast from 'react-hot-toast';
+import EmptyState from '../ui/EmptyState';
 
 
 const getInitials = (name) => {
@@ -138,12 +139,13 @@ const MembersContent = () => {
                 </div>
                 {/* other memebers  */}
                 {members.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-12">
-                        <p className="text-gray-400 text-sm">No members yet</p>
-                        <p className="text-gray-600 text-xs mt-1">
-                            Invite someone to join your workspace
-                        </p>
-                    </div>
+                    // <div className="flex flex-col items-center justify-center py-12">
+                    //     <p className="text-gray-400 text-sm">No members yet</p>
+                    //     <p className="text-gray-600 text-xs mt-1">
+                    //         Invite someone to join your workspace
+                    //     </p>
+                    // </div>
+                    <EmptyState type='members' />
                 ) : (
 
                     members.map((member, index) => (
