@@ -54,7 +54,6 @@ export function useTasks(userId) {
                 body: JSON.stringify(updates)
             })
             toast.success("Task Updated!")
-            console.log('Calling refreshStats...')
             refreshStats()
         } catch (error) {
             toast.error("Failed to update task")
