@@ -1,11 +1,13 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
+import { StatesContext } from "../context";
 
 export function useTaskList(userId) {
     const [tasks, setTasks] = useState()
     const [loading, setLoading] = useState(true)
     const [search, setSearch] = useState('')
     const [filter, setFilter] = useState({ status: 'all', priority: 'all' })
+    const { refreshStats } = useContext(StatesContext)
 
     const fetchTasks = useCallback(async () => {
         if (!userId) return
@@ -34,6 +36,7 @@ export function useTaskList(userId) {
             setTasks((prev) => prev.filter((t) => t._id !== id))
             await fetch(`/api/tasks/${id}`, { method: 'DELETE' })
             toast.success("Task Deleted!")
+            refreshStats()
         } catch (error) {
             console.error('Failed to delete task: ', error)
             fetchTasks()

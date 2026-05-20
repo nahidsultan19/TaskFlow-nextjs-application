@@ -3,6 +3,7 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { getDueDateInfo } from '@/utils/dueDate'
+import Swal from 'sweetalert2'
 
 const priorityStyles = {
     high: 'bg-red-500/10 text-red-400 border-red-500/20',
@@ -53,9 +54,23 @@ const TaskCard = ({ task, onDelete, onEdit }) => {
                         </svg>
                     </button>
                     <button
-                        onClick={(e) => {
+                        onClick={async (e) => {
                             e.stopPropagation()
-                            onDelete(task._id)
+                            const result = await Swal.fire({
+                                title: 'Delete Task?',
+                                text: `Are you sure you want to delete "${task.title}"?`,
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonText: 'Yes, delete it',
+                                cancelButtonText: 'Cancel',
+                                background: '#111827',
+                                color: '#fff',
+                                confirmButtonColor: '#dc2626',
+                                cancelButtonColor: '#374151',
+                            })
+                            if (result.isConfirmed) {
+                                onDelete(task._id)  // onDelete is deleteTask from useTasks
+                            }
                         }}
                         className="text-gray-500 hover:text-red-400 transition"
                     >

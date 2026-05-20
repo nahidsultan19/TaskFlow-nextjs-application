@@ -3,6 +3,7 @@
 import { useAuth } from "@/app/hooks/useAuth";
 import { useTaskList } from "@/app/hooks/useTaskList";
 import EmptyState from "../ui/EmptyState";
+import Swal from "sweetalert2";
 
 
 const statusStyles = {
@@ -27,6 +28,24 @@ const priorityStyles = {
 const TaskList = () => {
     const { user } = useAuth()
     const { tasks = [], loading, filter, setFilter, deleteTask, search, setSearch } = useTaskList(user?.uid)
+
+    const handleDelete = async (task) => {
+        const result = await Swal.fire({
+            title: 'Delete Task?',
+            text: `Are you sure you want to delete "${task.title}"?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it',
+            cancelButtonText: 'Cancel',
+            background: '#111827',
+            color: '#fff',
+            confirmButtonColor: '#dc2626',
+            cancelButtonColor: '#374151',
+        })
+        if (result.isConfirmed) {
+            deleteTask(task._id) // ← deleteTask from useTaskList
+        }
+    }
 
     if (loading) return (
         <div className="flex items-center justify-center h-full">
@@ -122,7 +141,7 @@ const TaskList = () => {
                                             )}
                                         </div>
                                         <button
-                                            onClick={() => deleteTask(task._id)}
+                                            onClick={() => handleDelete(task)}
                                             className="text-gray-500 hover:text-red-400 transition flex-shrink-0"
                                         >
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -204,7 +223,7 @@ const TaskList = () => {
                                     {/* Delete */}
                                     <div className="col-span-1 flex items-center justify-end">
                                         <button
-                                            onClick={() => deleteTask(task._id)}
+                                            onClick={() => handleDelete(task)}
                                             className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-400 transition"
                                         >
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
