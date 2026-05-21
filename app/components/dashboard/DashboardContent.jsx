@@ -3,6 +3,7 @@
 import { useAuth } from "@/app/hooks/useAuth";
 import { useStats } from "@/app/hooks/useStats";
 import Link from "next/link";
+import DashboardSkeleton from "../ui/DashboardSkeleton";
 
 
 const statsCard = [
@@ -77,6 +78,9 @@ const statsCard = [
 const DashboardComponent = () => {
     const { user } = useAuth()
     const { stats, loading } = useStats(user?.uid)
+
+    if (loading) return <DashboardSkeleton />
+
     return (
         <div className="space-y-7">
             <div>

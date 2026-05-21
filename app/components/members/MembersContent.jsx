@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useWorkspace } from '@/app/hooks/useWorkspace';
 import toast from 'react-hot-toast';
 import EmptyState from '../ui/EmptyState';
+import MembersSkeleton from '../ui/MembersSkeleton';
 
 
 const getInitials = (name) => {
@@ -73,6 +74,8 @@ const MembersContent = () => {
     //Filter out owner from members list
     const members = workspace?.members?.filter((m) => m.role !== 'owner') || []
     const isOwner = workspace?.ownerId === user?.uid
+
+    if (loading) return <MembersSkeleton />
 
     return (
         <div className='space-y-6 max-w-3xl'>

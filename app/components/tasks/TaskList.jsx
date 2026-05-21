@@ -9,6 +9,8 @@ import TaskModal from "../board/TaskModal";
 import { useTasks } from "@/app/hooks/useTasks";
 import { useTaskActions } from "@/app/hooks/useTaskActions";
 import { TasksContext } from "@/app/context";
+import Skeleton from "../ui/Skeleton";
+import TaskRowSkeleton from "../ui/TaskRowSkeleton";
 
 
 const statusStyles = {
@@ -33,7 +35,6 @@ const priorityStyles = {
 const TaskList = () => {
     const { user } = useAuth()
     const { filter, setFilter, deleteTask, search, setSearch, createTask } = useTaskList(user?.uid)
-    // const { createTask } = useTasks(user?.uid)
     const { tasks, loading } = useContext(TasksContext)
     const [showModal, setShowModal] = useState(false)
 
@@ -63,8 +64,22 @@ const TaskList = () => {
     }
 
     if (loading) return (
-        <div className="flex items-center justify-center h-full">
-            <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+        <div className="space-y-6">
+            <div className="flex items-center justify-between">
+                <div className="space-y-2">
+                    <Skeleton className="h-7 w-24" />
+                    <Skeleton className="h-4 w-32" />
+                </div>
+                <Skeleton className="h-10 w-28 rounded-lg" />
+            </div>
+            <Skeleton className="h-10 w-full rounded-lg" />
+            <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+                <TaskRowSkeleton />
+                <TaskRowSkeleton />
+                <TaskRowSkeleton />
+                <TaskRowSkeleton />
+                <TaskRowSkeleton />
+            </div>
         </div>
     )
 

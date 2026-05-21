@@ -8,6 +8,8 @@ import { useState } from 'react';
 import KanbanColumn from './KanbanColumn';
 import TaskCard from './TaskCard';
 import TaskModal from './TaskModal';
+import Skeleton from '../ui/Skeleton';
+import KanbanColumnSkeleton from '../ui/KanbanColumnSkeleton';
 
 
 const COLUMNS = ['todo', 'inprogress', 'done']
@@ -94,7 +96,22 @@ const KanbanBoard = () => {
         }
     }
 
-
+    if (loading) return (
+        <div className="h-full flex flex-col">
+            <div className="flex items-center justify-between mb-6">
+                <div className="space-y-2">
+                    <Skeleton className="h-7 w-36" />
+                    <Skeleton className="h-4 w-24" />
+                </div>
+                <Skeleton className="h-10 w-28 rounded-lg" />
+            </div>
+            <div className="flex gap-4 flex-1">
+                <KanbanColumnSkeleton />
+                <KanbanColumnSkeleton />
+                <KanbanColumnSkeleton />
+            </div>
+        </div>
+    )
 
     return (
         <div className='h-full flex flex-col'>
