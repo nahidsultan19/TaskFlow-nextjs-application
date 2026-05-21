@@ -1,6 +1,6 @@
 import React from 'react';
 
-const EmptyState = ({ type = 'tasks', onClearSearch, search }) => {
+const EmptyState = ({ type = 'tasks', onClearSearch, onActionModal, actionLabel }) => {
     const states = {
         tasks: {
             illustration: (
@@ -62,13 +62,27 @@ const EmptyState = ({ type = 'tasks', onClearSearch, search }) => {
 
     return (
         <div className='flex flex-col items-center justify-center py-16 px-4'>
-            <div className="mb-4 opacity-80">
-                {state.illustration}
+            <div onClick={onActionModal} className="mb-4 opacity-80">
+                {/* Illustration — clickable if onAction provided */}
+                {onActionModal && type !== 'search' ? (
+                    <button
+                        className="mb-4 opacity-80 hover:opacity-100 hover:scale-105 transition-all duration-200 cursor-pointer"
+                        title={actionLabel || 'Create Task'}
+                    >
+                        {state.illustration}
+                    </button>
+                ) : (
+                    <div className="mb-4 opacity-80">
+                        {state.illustration}
+                    </div>
+                )}
+
             </div>
             <h3 className="text-white font-medium text-base mb-1">
                 {state.title}
             </h3>
             <p className="text-gray-400 text-sm text-center max-w-xs">{state.description}</p>
+
             {/* show clear button for search type  */}
             {type === 'search' && onClearSearch && (
                 <button

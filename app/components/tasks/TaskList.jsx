@@ -4,6 +4,11 @@ import { useAuth } from "@/app/hooks/useAuth";
 import { useTaskList } from "@/app/hooks/useTaskList";
 import EmptyState from "../ui/EmptyState";
 import Swal from "sweetalert2";
+import { useContext, useState } from "react";
+import TaskModal from "../board/TaskModal";
+import { useTasks } from "@/app/hooks/useTasks";
+import { useTaskActions } from "@/app/hooks/useTaskActions";
+import { TasksContext } from "@/app/context";
 
 
 const statusStyles = {
@@ -27,7 +32,17 @@ const priorityStyles = {
 
 const TaskList = () => {
     const { user } = useAuth()
-    const { tasks = [], loading, filter, setFilter, deleteTask, search, setSearch } = useTaskList(user?.uid)
+    const { filter, setFilter, deleteTask, search, setSearch, createTask } = useTaskList(user?.uid)
+    // const { createTask } = useTasks(user?.uid)
+    const { tasks, loading } = useContext(TasksContext)
+    const [showModal, setShowModal] = useState(false)
+
+    const handleCreateTask = async (data) => {
+        await createTask({ ...data, status: 'todo' })
+        setShowModal(false)
+    }
+
+
 
     const handleDelete = async (task) => {
         const result = await Swal.fire({
@@ -56,12 +71,12 @@ const TaskList = () => {
     return (
         <div className="space-y-6">
             {/* header  */}
-            =
             <div className="flex items-center justify-between">
                 <div>
                     <h2 className="text-xl font-semibold text-white">Tasks</h2>
                     <p className="text-gray-400 text-sm mt-1">{tasks.length} tasks found</p>
                 </div>
+
             </div>
             {/* search bar  */}
             <div className="relative">
@@ -111,7 +126,7 @@ const TaskList = () => {
                         />
 
                     ) : (
-                        <EmptyState type="tasks" />
+                        <EmptyState type="tasks" onActionModal={() => setShowModal(true)} />
                     )}
                 </div>
             ) : (
@@ -240,6 +255,9 @@ const TaskList = () => {
                         ))}
                     </div>
                 </div>
+            )}
+            {showModal && (
+                <TaskModal onClose={() => setShowModal(false)} onSubmit={handleCreateTask} task={null} />
             )}
         </div>
     );
