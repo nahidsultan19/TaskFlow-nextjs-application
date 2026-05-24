@@ -1,15 +1,15 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { StatesContext } from "../context";
+import { StatesContext, TasksContext } from "../context";
 import { useTaskActions } from "./useTaskActions";
 
 export function useTaskList(userId) {
-    const [tasks, setTasks] = useState()
-    const [loading, setLoading] = useState(true)
     const [search, setSearch] = useState('')
-    const [filter, setFilter] = useState({ status: 'all', priority: 'all' })
+    const [filter, setFilter] = useState({ status: 'all', priority: 'all', dueDate: 'all' })
     const { refreshStats } = useContext(StatesContext)
+    const { tasks = [], loading } = useContext(TasksContext)
     const { createTask, updateTask, deleteTask } = useTaskActions(userId)
+
 
     // const fetchTasks = useCallback(async () => {
     //     if (!userId) return
@@ -71,9 +71,31 @@ export function useTaskList(userId) {
 
         // search filter 
         const searchMatch = search === '' || task.title.toLowerCase().includes(search.toLocaleLowerCase()) || task.description?.toLocaleLowerCase().includes(search.toLocaleLowerCase())
-        return statusMatch && priorityMatch && searchMatch
-    })
 
+        // due date filter
+        let dueDateMatch = true
+        if (filter.dueDate !== 'all') {
+            const today = new Date()
+            today.setHours(0, 0, 0, 0)
+            const weekEnd = new Date(today)
+            weekEnd.setDate(weekEnd.getDate() + 7)
+
+            if (filter.dueDate === 'overdue') {
+                dueDateMatch = task.dueDate && new Date(task.dueDate) < today && task.status !== 'done'
+            } else if (filter.dueDate === 'today') {
+                const due = new Date(task.dueDate)
+                due.setHours(0, 0, 0, 0)
+                dueDateMatch = task.dueDate && due.getTime() === today.getTime()
+            } else if (filter.dueDate === 'week') {
+                dueDateMatch = task.dueDate && new Date(task.dueDate) >= today && new Date(task.dueDate) <= weekEnd
+            } else if (filter.dueDate === 'none') {
+                dueDateMatch = !task.dueDate
+            }
+        }
+
+
+        return statusMatch && priorityMatch && searchMatch && dueDateMatch
+    })
 
 
     return { tasks: filteredTasks, search, setSearch, loading, filter, setFilter, deleteTask, createTask, updateTask }

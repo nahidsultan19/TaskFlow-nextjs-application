@@ -4,11 +4,8 @@ import { useAuth } from "@/app/hooks/useAuth";
 import { useTaskList } from "@/app/hooks/useTaskList";
 import EmptyState from "../ui/EmptyState";
 import Swal from "sweetalert2";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import TaskModal from "../board/TaskModal";
-import { useTasks } from "@/app/hooks/useTasks";
-import { useTaskActions } from "@/app/hooks/useTaskActions";
-import { TasksContext } from "@/app/context";
 import Skeleton from "../ui/Skeleton";
 import TaskRowSkeleton from "../ui/TaskRowSkeleton";
 
@@ -34,8 +31,7 @@ const priorityStyles = {
 
 const TaskList = () => {
     const { user } = useAuth()
-    const { filter, setFilter, deleteTask, search, setSearch, createTask } = useTaskList(user?.uid)
-    const { tasks, loading } = useContext(TasksContext)
+    const { tasks, loading, filter, setFilter, deleteTask, search, setSearch, createTask } = useTaskList(user?.uid)
     const [showModal, setShowModal] = useState(false)
 
     const handleCreateTask = async (data) => {
@@ -116,7 +112,9 @@ const TaskList = () => {
                 {/* status filter  */}
                 <div className="flex items-center gap-2 bg-gray-900 border border-gray-800 rounded-lg p-1">
                     {['all', 'todo', 'inprogress', 'done'].map((status) => (
-                        <button key={status} onClick={() => setFilter((prev) => ({ ...prev, status }))} className={`px-3 py-1.5 rounded-md text-xs font-medium transition ${filter.status === status ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white'}`}>{status === 'all' ? 'All Status' : statusLabels[status]}</button>
+                        <button key={status} onClick={() => setFilter((prev) => ({ ...prev, status }))} className={`px-3 py-1.5 rounded-md text-xs font-medium transition ${filter.status === status ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white'}`}>
+                            {status === 'all' ? 'All Status' : statusLabels[status]}
+                        </button>
                     ))}
                 </div>
 
@@ -125,6 +123,27 @@ const TaskList = () => {
                     {['all', 'high', 'medium', 'low'].map((priority) => (
                         <button key={priority} onClick={() => setFilter((prev) => ({ ...prev, priority }))} className={`px-3 py-1.5 rounded-md text-xs font-medium transition ${filter.priority === priority ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white'}`}>
                             {priority === 'all' ? 'All Priority' : priority.charAt(0).toUpperCase() + priority.slice(1)}
+                        </button>
+                    ))}
+                </div>
+                {/* due date filter  */}
+                <div className="flex items-center gap-2 bg-gray-900 border border-gray-800 rounded-lg p-1">
+                    {[
+                        { value: 'all', label: 'All Dates' },
+                        { value: 'overdue', label: '🔴 Overdue' },
+                        { value: 'today', label: '🟡 Today' },
+                        { value: 'week', label: '📅 This Week' },
+                        { value: 'none', label: 'No Date' },
+                    ].map((option) => (
+                        <button
+                            key={option.value}
+                            onClick={() => setFilter((prev) => ({ ...prev, dueDate: option.value }))}
+                            className={`px-3 py-1.5 rounded-md text-xs font-medium transition ${filter.dueDate === option.value
+                                ? 'bg-indigo-600 text-white'
+                                : 'text-gray-400 hover:text-white'
+                                }`}
+                        >
+                            {option.label}
                         </button>
                     ))}
                 </div>

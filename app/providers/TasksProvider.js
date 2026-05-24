@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { TasksContext } from '../context';
 
 const TasksProvider = ({ children, userId }) => {
-    const [tasks, setTasks] = useState()
+    const [tasks, setTasks] = useState([])
     const [loading, setLoading] = useState(true)
 
     const fetchTasks = useCallback(async () => {
