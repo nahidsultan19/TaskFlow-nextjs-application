@@ -2,8 +2,6 @@
 
 A full-stack SaaS productivity app built with Next.js, Firebase, and MongoDB. TaskFlow helps you manage tasks with a beautiful Kanban board, real-time updates, and team collaboration features.
 
-![TaskFlow Dashboard](https://via.placeholder.com/1200x600/1f2937/6366f1?text=TaskFlow+Dashboard)
-
 ## 🚀 Live Demo
 
 [https://task-flow-nextjs-application.vercel.app/](https://task-flow-nextjs-application.vercel.app)
@@ -14,15 +12,44 @@ A full-stack SaaS productivity app built with Next.js, Firebase, and MongoDB. Ta
 
 ---
 
+## 📸 Screenshots
+
+### Landing Page
+![Landing Page](./screenshots/landing_page.png)
+
+### Login
+![Login](./screenshots/login.png)
+
+### Dashboard
+![Dashboard](./screenshots/dashboard.png)
+
+### Kanban Board
+![Kanban Board](./screenshots/kanbanboard.png)
+
+### Tasks List
+![Tasks List](./screenshots/taskslist.png)
+
+### Members
+![Members](./screenshots/members.png)
+
+### Settings
+![Settings](./screenshots/setting.png)
+
+---
+
 ## ✨ Features
 
 - **Authentication** — Email/password and Google sign-in via Firebase
 - **Kanban Board** — Drag and drop tasks between Todo, In Progress, and Done columns
-- **Task Management** — Create, edit, delete tasks with priority levels
-- **Tasks List** — Table view with filter by status and priority
+- **Task Management** — Create, edit, delete tasks with priority levels and due dates
+- **Tasks List** — Table view with filter by status, priority and due date
+- **Real-time Search** — Search tasks by title or description instantly
 - **Dashboard** — Real-time stats and progress tracking
 - **Team Members** — Invite members by email, auto-activate on signup
 - **Settings** — Update profile, change password, delete account
+- **Loading Skeletons** — Professional skeleton loaders while data loads
+- **Toast Notifications** — Beautiful notifications for every action
+- **Confirmation Dialogs** — SweetAlert2 confirmation before deleting
 - **Responsive** — Works on mobile, tablet, and desktop
 - **Dark Mode** — Beautiful dark UI throughout
 
@@ -39,6 +66,8 @@ A full-stack SaaS productivity app built with Next.js, Firebase, and MongoDB. Ta
 | [MongoDB Atlas](https://www.mongodb.com/atlas) | Database |
 | [Mongoose](https://mongoosejs.com/) | MongoDB ODM |
 | [@dnd-kit](https://dndkit.com/) | Drag and drop |
+| [SweetAlert2](https://sweetalert2.github.io/) | Confirmation dialogs |
+| [React Hot Toast](https://react-hot-toast.com/) | Toast notifications |
 | [Vercel](https://vercel.com/) | Deployment |
 
 ---
@@ -57,33 +86,43 @@ taskflow/
 │   │   ├── tasks/
 │   │   ├── members/
 │   │   └── settings/
-│   └── api/
-│       ├── tasks/
-│       ├── workspaces/
-│       └── tasks/stats/
-├── components/
-│   ├── auth/
-│   ├── board/
-│   ├── dashboard/
-│   ├── layout/
-│   ├── members/
-│   ├── settings/
-│   └── tasks/
-├── context/
-│   ├── index.js
-│   └── provider/
-├── hooks/
-│   ├── useAuth.js
-│   ├── useTasks.js
-│   ├── useTaskList.js
-│   ├── useStats.js
-│   └── useWorkspace.js
+│   ├── api/
+│   │   ├── tasks/
+│   │   ├── tasks/[id]/
+│   │   ├── tasks/stats/
+│   │   └── workspaces/
+│   ├── components/
+│   │   ├── auth/
+│   │   ├── board/
+│   │   ├── dashboard/
+│   │   ├── layout/
+│   │   ├── members/
+│   │   ├── settings/
+│   │   ├── tasks/
+│   │   └── ui/
+│   ├── context/
+│   │   └── index.js
+│   ├── hooks/
+│   │   ├── useAuth.js
+│   │   ├── useTasks.js
+│   │   ├── useTaskList.js
+│   │   ├── useTaskActions.js
+│   │   ├── useStats.js
+│   │   └── useWorkspace.js
+│   └── providers/
+│       ├── AuthProvider.js
+│       ├── StatsProvider.js
+│       └── TasksProvider.js
 ├── lib/
 │   ├── mongodb.js
 │   └── firebase.js
-└── models/
-    ├── Task.js
-    └── Workspace.js
+├── models/
+│   ├── Task.js
+│   └── Workspace.js
+└── utils/
+    └── dueDate.js
+    └── getInitials.js
+    
 ```
 
 ---
@@ -156,25 +195,6 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-## 📱 Screenshots
-
-### Landing Page
-![Landing Page](https://via.placeholder.com/800x450/1f2937/6366f1?text=Landing+Page)
-
-### Dashboard
-![Dashboard](https://via.placeholder.com/800x450/1f2937/6366f1?text=Dashboard)
-
-### Kanban Board
-![Kanban Board](https://via.placeholder.com/800x450/1f2937/6366f1?text=Kanban+Board)
-
-### Tasks List
-![Tasks List](https://via.placeholder.com/800x450/1f2937/6366f1?text=Tasks+List)
-
-### Members
-![Members](https://via.placeholder.com/800x450/1f2937/6366f1?text=Members)
-
----
-
 ## 🏗️ Architecture
 
 ### Authentication Flow
@@ -183,21 +203,29 @@ User signs in (Firebase)
     → onAuthStateChanged fires
     → User stored in AuthContext
     → AuthGuard protects dashboard routes
-    → Pending workspace invites activated
+    → Pending workspace invites activated automatically
+```
+
+### Shared State Architecture
+```
+TasksContext (single source of truth)
+    ├── KanbanBoard → useTasks → reads shared tasks
+    ├── TaskList → useTaskList → reads same shared tasks
+    └── Any update → all components update instantly
 ```
 
 ### API Routes
 ```
-GET  /api/tasks              → fetch all tasks by userId
-POST /api/tasks              → create new task
-PATCH /api/tasks/[id]        → update task (status, priority)
-DELETE /api/tasks/[id]       → delete task
-GET  /api/tasks/stats        → get task counts by status
-GET  /api/workspaces         → get user workspace
-POST /api/workspaces         → create workspace
-POST /api/workspaces/invite  → invite member by email
-POST /api/workspaces/remove  → remove member
-POST /api/workspaces/activate → activate pending member
+GET    /api/tasks              → fetch all tasks by userId
+POST   /api/tasks              → create new task
+PATCH  /api/tasks/[id]         → update task
+DELETE /api/tasks/[id]         → delete task
+GET    /api/tasks/stats        → get task counts by status
+GET    /api/workspaces         → get user workspace
+POST   /api/workspaces         → create workspace
+POST   /api/workspaces/invite  → invite member by email
+POST   /api/workspaces/remove  → remove member
+POST   /api/workspaces/activate → activate pending member
 ```
 
 ### Database Models
@@ -209,6 +237,7 @@ POST /api/workspaces/activate → activate pending member
   description: String,
   status: 'todo' | 'inprogress' | 'done',
   priority: 'low' | 'medium' | 'high',
+  dueDate: Date,
   userId: String,
   timestamps: true
 }
@@ -252,13 +281,13 @@ Also make sure to:
 **Nahid Sultan**
 
 - GitHub: [@nahidsultan19](https://github.com/nahidsultan19)
-- LinkedIn: [https://www.linkedin.com/in/nahid-sultan01/](https://www.linkedin.com/in/nahid-sultan01)
+- LinkedIn: [https://www.linkedin.com/in/nahid-sultan01/](https://linkedin.com)
 
 ---
 
 ## 📄 License
 
-This project is open source and available under the [License](LICENSE).
+This project is open source and available under the [MIT License](LICENSE).
 
 ---
 
